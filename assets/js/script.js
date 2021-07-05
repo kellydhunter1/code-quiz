@@ -5,14 +5,44 @@ const highScoreEl = document.querySelector("#high-score");
 const startBtn = document.querySelector("#start-btn");
 const timerEl = document.querySelector("#timer");
 const quizScore = 0;
+let quizTimer = 5;
 const quizQuestionsArr = [
     // copy this object format for each question, a: is number of correct answer
     { q: 'This is question 1', 1: '', 2: '', 3: '',  4: '', a: 2 },
     { q: 'This is question 2', 1: '', 2: '', 3: '',  4: '', a: 2 },
     { q: 'This is question 3', 1: '', 2: '', 3: '',  4: '', a: 2 },
     { q: 'This is question 4', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: 'This is question 5', 1: '', 2: '', 3: '',  4: '', a: 2 }
+    { q: 'This is question 5', 1: '', 2: '', 3: '',  4: '', a: 2 },
+    { q: "end of quiz!"}
     ];
+
+
+/*
+// TIMER THAT COUNTS DOWN FROM 60 
+*/
+function countdown() {
+  // Use the `setInterval()` method to call a function to be executed every 1000 milliseconds
+  var timeInterval = setInterval(function() {
+    // As long as the `quizTimer` is greater than 1
+    if (quizTimer > 1) {
+      // Set the `textContent` of `timerEl` to show the remaining seconds
+      timerEl.textContent = quizTimer + ' seconds remaining';
+      // Decrement `quizTimer` by 1
+      quizTimer--;
+    } else if (quizTimer === 1) {
+      // When `quizTimer` is equal to 1, rename to 'second' instead of 'seconds'
+      timerEl.textContent = quizTimer + ' second remaining';
+      quizTimer--;
+    } else {
+      // Once `quizTimer` gets to 0, set `timerEl` to an empty string
+      timerEl.textContent = "TIMES UP!";
+      // Use `clearInterval()` to stop the timer
+      clearInterval(timeInterval);
+      // Call the `gameOver()` function
+      quizOver();
+    }
+  }, 1000);
+};
 
 /*
    QUIZ INTRO FUNCTION
@@ -39,26 +69,17 @@ const quizIntro = function () {
     quizIntroEl.appendChild(startQuizBtn);
   };
 
+  let i = 0;
+  
+  const quizQuestions = function() { 
+    quizQuestionsEl.textContent = quizQuestionsArr[i].q;
+    // i++;
+  };
 
-/*
-// STARTS THE QUIZ ON BUTTON CLICK
-*/
-const quizButtonHandler = function (event) {
-  var targetEl = event.target;
 
-if (targetEl.matches("#start-btn")) {
-  startQuiz();
-  console.log("Start Quiz", targetEl);
-} if (targetEl.matches("#replay-btn")) {
-    quizIntroEl.textContent = "";
-    highScoreEl.textContent = "";
-    quizIntro();
-  console.log("Try Again", targetEl);
-} if (targetEl.matches("#quiz-question")){
-  console.log("next question");
-}
-else return;
-};
+
+
+
 
 
 const quizOver = function() {
@@ -79,37 +100,13 @@ highScoreEl.appendChild(playAgainBtn);
 // remove correct answers div
 // quizContainer.removeChild();
 quizQuestionsEl.textContent = "";
+i = 0;
+quizTimer = 5;
 };
 
 
 
-/*
-// TIMER THAT COUNTS DOWN FROM 60 
-*/
-function countdown() {
-  let quizTimer = 5;
-  // Use the `setInterval()` method to call a function to be executed every 1000 milliseconds
-  var timeInterval = setInterval(function() {
-    // As long as the `quizTimer` is greater than 1
-    if (quizTimer > 1) {
-      // Set the `textContent` of `timerEl` to show the remaining seconds
-      timerEl.textContent = quizTimer + ' seconds remaining';
-      // Decrement `quizTimer` by 1
-      quizTimer--;
-    } else if (quizTimer === 1) {
-      // When `quizTimer` is equal to 1, rename to 'second' instead of 'seconds'
-      timerEl.textContent = quizTimer + ' second remaining';
-      quizTimer--;
-    } else {
-      // Once `quizTimer` gets to 0, set `timerEl` to an empty string
-      timerEl.textContent = "TIMES UP!";
-      // Use `clearInterval()` to stop the timer
-      clearInterval(timeInterval);
-      // Call the `gameOver()` function
-      quizOver();
-    }
-  }, 1000);
-};
+
 
 
 
@@ -117,21 +114,15 @@ function countdown() {
 // STARTS QUIZ
 // timer starts, questions populate, keeps track of correct answers
 */
-const startQuiz = function(event) {
+
+const startQuiz = function() {
   // clear out quiz intro from the div
   quizIntroEl.textContent = "";
   // start timer
   countdown();
+  quizQuestions();
+  }; 
 
-
-
-  // loop through questions
-  for (let i = 0; i < quizQuestionsArr.length;) {
-    quizQuestionsEl.innerHTML = "<h3 id='quiz-question'>" + quizQuestionsArr[i].q + "</h3>"
-  }; if (event.target.matches(quizQuestionsEl)) {
-    i++;
-    return;
-  };
   
 
 
@@ -141,10 +132,33 @@ const startQuiz = function(event) {
 
 
   
+/*
+// STARTS THE QUIZ ON BUTTON CLICK
+*/
+const quizButtonHandler = function (event) {
+  var targetEl = event.target;
 
-// quizQuestionsEl.appendChild(quizQuestions);
-
+if (targetEl.matches("#start-btn")) {
+  startQuiz();
+  console.log("Start Quiz", targetEl);
+} if (targetEl.matches("#replay-btn")) {
+    quizIntroEl.textContent = "";
+    highScoreEl.textContent = "";
+    quizIntro();
+  console.log("Try Again", targetEl);
+} if (targetEl.matches("#quiz-questions")) {
+      quizQuestions();
+      i++;
+      if (i == quizQuestionsArr.length) {
+        quizQuestionsEl.textContent = "YOUR HAVE ANSWERED ALL QUIZ QUESTIONS! GAME OVER.";
+        console.log("END OF ARRAY. GAME OVER.");
+        timerEl.textContent ="Quiz Finished!"
+       quizTimer = 0;
+        // quizOver();
+      }
+  }
 };
+
 
 
 quizIntro();
@@ -160,8 +174,4 @@ quizIntroEl.addEventListener("click", quizButtonHandler);
 quizQuestionsEl.addEventListener("click", quizButtonHandler);
 // event listener on try again to start quiz intro
 highScoreEl.addEventListener("click", quizButtonHandler);
-
-
-
-
 
