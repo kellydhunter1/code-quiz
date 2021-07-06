@@ -4,22 +4,40 @@ const quizQuestionsEl = document.querySelector("#quiz-questions");
 const highScoreEl = document.querySelector("#high-score");
 const startBtn = document.querySelector("#start-btn");
 const timerEl = document.querySelector("#timer");
+const questionEl = document.querySelector("#question");
+const answersEl = document.querySelector("#answer-choices");
+const answerBtn = document.querySelector(".choice-button");
+const answerResponseEl = document.querySelector("#answer-response");
 const quizScore = 0;
-let quizTimer = 5;
+let answerBtnId = 0;
+let q = 0;
+let quizTimer = 60;
+let i = 0;
+
 const quizQuestionsArr = [
-    // copy this object format for each question, a: is number of correct answer
-    { q: 'This is question 1', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: 'This is question 2', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: 'This is question 3', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: 'This is question 4', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: 'This is question 5', 1: '', 2: '', 3: '',  4: '', a: 2 },
-    { q: "end of quiz!"}
+    // copy this object format for each question
+  {question: "Where is the correct place to insert JavaScript in an HTML file?", 
+    answer: {
+        choice1:"Both the <head> and the <body> section are correct",
+          choice2: "The <body> section", /*correct answer*/
+          choice3: "the <head> section"
+          }
+  },
+  {question: "How do you display an alert box with the messagee 'Hello World'?", 
+  answer: {
+      choice1: "msgBox('Hello World')",
+        choice2: "alert('Hello WOrld')", /*correct answer*/
+        choice3: "Alexa, make an alert box with 'Hello World'"
+        }
+}
     ];
 
 
 /*
-// TIMER THAT COUNTS DOWN FROM 60 
+TIMER FUNCTION
+Counts Down from 60
 */
+
 function countdown() {
   // Use the `setInterval()` method to call a function to be executed every 1000 milliseconds
   var timeInterval = setInterval(function() {
@@ -44,11 +62,19 @@ function countdown() {
   }, 1000);
 };
 
-/*
-   QUIZ INTRO FUNCTION
-  creates div for directions and start button
-*/
 
+
+// const finishAllQuestions = function() {
+//   clearInterval(timeInterval);
+//   questionEl.innerHTML = "YOUR HAVE ANSWERED ALL QUIZ QUESTIONS! GAME OVER.";
+//   console.log("END OF ARRAY. GAME OVER.");
+// setTimeout(quizOver(), 2000);
+// };
+
+/*
+QUIZ INTRO FUNCTION
+Creates div for directions and start button
+*/
 const quizIntro = function () {
 // if buttons are on the page, skip create div, form, and button
   // creates div and adds directions
@@ -69,22 +95,57 @@ const quizIntro = function () {
     quizIntroEl.appendChild(startQuizBtn);
   };
 
-  let i = 0;
+
+
+  /*
+  QUIZ QUESTIONS FUNCTION
+  populates each question
+  */
   
+const createChoicesEl = function() {
+  let i = 0;
+  Object.values(quizQuestionsArr[i].answer).forEach(val => {
+    const choiceEl = document.createElement("li");
+    choiceEl.className = "answer-choice";
+    
+
+    const choiceBtn = document.createElement("button");
+    choiceBtn.className = "choice-button";
+    choiceBtn.setAttribute("data-choice-id", answerBtnId);
+    answerBtnId++;
+
+
+
+    choiceBtn.textContent = val;
+    choiceEl.appendChild(choiceBtn);
+    answersEl.appendChild(choiceEl);
+    });
+  };
+
   const quizQuestions = function() { 
-    quizQuestionsEl.textContent = quizQuestionsArr[i].q;
-    // i++;
+    let question = quizQuestionsArr[q].question;
+    console.log("Here is the Question: ", question);
+    questionEl.textContent = question;
+
+    createChoicesEl();
+
+    q++;
+    i++;
+
   };
 
 
 
 
-
-
-
+/*
+QUIZ OVER FUNCTION
+Ends quiz, shows score, and resets quiz
+*/
 const quizOver = function() {
-  // create new high score div
-
+  // clear text from game div
+  questionEl.innerHTML= "";
+  
+  // create new high score text
   let highScoreText = document.createElement("h2");
     highScoreText.textContent = "I WONDER WHAT THE HIGH SCORE WILL BE?!";
 
@@ -95,26 +156,23 @@ const quizOver = function() {
     playAgainBtn.setAttribute('id', 'replay-btn');
 
   // add button to div
-highScoreEl.appendChild(highScoreText);
-highScoreEl.appendChild(playAgainBtn);
-// remove correct answers div
-// quizContainer.removeChild();
-quizQuestionsEl.textContent = "";
-i = 0;
-quizTimer = 5;
-};
-
-
-
-
+    highScoreEl.appendChild(highScoreText);
+    highScoreEl.appendChild(playAgainBtn);
+    answersEl.textContent = "";
+    questionEl.textContent = "";
+  
+  // reset questions and timer
+    i = 0;
+    q = 0;
+    quizTimer = 60;
+  };
 
 
 
 /*
-// STARTS QUIZ
-// timer starts, questions populate, keeps track of correct answers
+STARTS QUIZ
+timer starts, questions populate, keeps track of correct answers
 */
-
 const startQuiz = function() {
   // clear out quiz intro from the div
   quizIntroEl.textContent = "";
@@ -123,55 +181,54 @@ const startQuiz = function() {
   quizQuestions();
   }; 
 
-  
-
-
-
-
-
-
 
   
 /*
-// STARTS THE QUIZ ON BUTTON CLICK
+QUIZ BUTTON HANDLER
+Controls start button, answer choices, and replay button
 */
 const quizButtonHandler = function (event) {
   var targetEl = event.target;
 
-if (targetEl.matches("#start-btn")) {
-  startQuiz();
-  console.log("Start Quiz", targetEl);
+  if (targetEl.matches("#start-btn")) {
+    startQuiz();
+    console.log("Start Quiz", targetEl);
 } if (targetEl.matches("#replay-btn")) {
     quizIntroEl.textContent = "";
     highScoreEl.textContent = "";
+    answersEl.textContent = "";
+    timerEl.innterHTML = "";
     quizIntro();
   console.log("Try Again", targetEl);
-} if (targetEl.matches("#quiz-questions")) {
+} if (targetEl.matches(".choice-button")) {
+    answersEl.innerHTML = "";
+     if (i == quizQuestionsArr.length) {
+      questionEl.innerHTML = "YOUR HAVE ANSWERED ALL QUIZ QUESTIONS! GAME OVER.";
+      console.log("END OF ARRAY. GAME OVER.");
+      quizTimer = 2;
+    } else {
       quizQuestions();
-      i++;
-      if (i == quizQuestionsArr.length) {
-        quizQuestionsEl.textContent = "YOUR HAVE ANSWERED ALL QUIZ QUESTIONS! GAME OVER.";
-        console.log("END OF ARRAY. GAME OVER.");
-        timerEl.textContent ="Quiz Finished!"
-       quizTimer = 0;
-        // quizOver();
-      }
+      console.log("Next Question",targetEl);
+    }
   }
 };
 
 
 
+// STARTS QUIZ
 quizIntro();
 
 
+
 /*
-Event Listeners
+EVENT LISTENERS
 */
 
 // event listener on start button to call start quiz
-quizIntroEl.addEventListener("click", quizButtonHandler);
-// event listener on answer selection to bring the next question 
-quizQuestionsEl.addEventListener("click", quizButtonHandler);
-// event listener on try again to start quiz intro
-highScoreEl.addEventListener("click", quizButtonHandler);
+quizContainer.addEventListener("click", quizButtonHandler);
+// // event listener on answer selection to bring the next question 
+// quizQuestionsEl.addEventListener("click", quizButtonHandler);
+// // event listener on try again to start quiz intro
+// highScoreEl.addEventListener("click", quizButtonHandler);
+// // event listener for quesation clicks to
 
