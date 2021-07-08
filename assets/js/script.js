@@ -9,12 +9,14 @@ const answersEl = document.querySelector("#answer-choices");
 const answerBtn = document.querySelector(".choice-button");
 const answerResponseEl = document.querySelector("#answer-response");
 const answerChoiceLi = document.querySelector(".answer-choice");
+const questionCounter = document.querySelector("#question-counter");
 let timeInterval = null;
 const quizScore = 0;
 let answerBtnId = 0;
 let q = 0;
 let quizTimer = 10;
 let questionNumber = 0;
+let questionsCorrect = 0;
 
 const quizQuestionsArr = [
     // copy this object format for each question
@@ -112,6 +114,9 @@ const quizIntro = function () {
     // add button to div
     quizIntroEl.appendChild(startQuizBtn);
     quizTimer = 60;
+    questionNumber = 0;
+    questionsCorrect = 0;
+    questionCounter.innerHTML = ""
   };
 
 
@@ -162,7 +167,6 @@ const stopTimer = function() {
     answersEl.innerHTML = "";
     quizOver();
   }
-  questionNumber = 0;
 };
 
 
@@ -173,12 +177,13 @@ Ends quiz, shows score, and resets quiz
 const quizOver = function() {
   // stop timer
   quizTimer = 0;
+  questionCounter.innerHTML = "";
   // QuestionNumber = 0;
 
   
   // create new high score text
   let highScoreText = document.createElement("h2");
-    highScoreText.textContent = "I WONDER WHAT THE HIGH SCORE WILL BE?!";
+    highScoreText.innerHTML = "Final Score: "+ questionsCorrect + "/" + questionNumber ;
 
    // creates play again button
   let playAgainBtn = document.createElement("button");
@@ -209,7 +214,7 @@ const startQuiz = function() {
   // start questions and timer
   countdown();
   quizQuestions();
-  QuestionNumber = 0;
+  
   }; 
 
 
@@ -252,14 +257,17 @@ const quizButtonHandler = function (event) {
  if (targetEl.id == JSON.stringify(quizQuestionsArr[questionNumber].correct)) {
   console.log("Correct! Next question.", targetEl.id);
   answerResponseEl.innerHTML = "Correct!";
+  questionsCorrect = questionsCorrect+1;
   setTimeout(function() {quizQuestions();}, 1000);
  } else { answerResponseEl.innerHTML = "Incorrect! -5 seconds";
  quizTimer = quizTimer-5;
  setTimeout(function() {quizQuestions();}, 1000);
  console.log("Incorrect, next question.", targetEl.id);
+ 
       // quiz answer choice is incorrect
     }
     questionNumber++;
+    questionCounter.innerHTML = "Score: "+ questionsCorrect + "/" + questionNumber ;
   }
 };
 
