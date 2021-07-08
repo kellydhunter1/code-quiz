@@ -34,6 +34,30 @@ const quizQuestionsArr = [
       },
     correct: 1
   },
+  { question: 'What is an object that stores multiple values in a single variable?',
+  answer: {
+    1:  "storage bin", 
+    2: "a web", 
+    3: "array", /*correct answer*/
+    },
+  correct: 3
+},
+{ question: 'How are Boolean functions used?',
+answer: {
+  1: "to make your application more efficient", 
+  2: "to warn users about hackers", 
+  3: "to find if an expression is true or false", /*correct answer*/
+  },
+correct: 3
+},
+{ question: 'Do you think you will earn a high score?',
+answer: {
+  1: "Yep, I'm a web dev pro", 
+  2: "Unlikely", 
+  3: "I'm just here to see Kelly's code quiz", /*correct answer*/
+  },
+correct: 1
+}
 ];
 
 
@@ -230,6 +254,7 @@ const quizButtonHandler = function (event) {
   answerResponseEl.innerHTML = "Correct!";
   setTimeout(function() {quizQuestions();}, 1000);
  } else { answerResponseEl.innerHTML = "Incorrect! -5 seconds";
+ quizTimer = quizTimer-5;
  setTimeout(function() {quizQuestions();}, 1000);
  console.log("Incorrect, next question.", targetEl.id);
       // quiz answer choice is incorrect
