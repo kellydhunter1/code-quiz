@@ -11,12 +11,10 @@
 <body>
    <!-- header with high scores and timer -->
     <header class="flex-container main-content">
-        <div id="high-scores">
-            HIGH SCORES
-        </div>
-        <div id ="question-counter">
-        </div>
-
+        <ol id="high-scores" name ="high-scores">
+        </ol>
+    </div>
+        <div id="question-counter">
         </div>
         <div id="timer"></div>
     </header>
@@ -33,7 +31,13 @@
                 <ul id="answer-choices"></ul>
                 <div id="answer-response"></div>
             </div>
-            <div id="high-score"></div>
+            <div id="high-score">
+                <h2 id="final-score"></h2>
+                <form class="form" id="high-score-form">
+                    <input class="form-group" name="initials" id="initials" placeholer="Enter Initials" type="text">
+                    <input type="submit" id="save-score-btn">
+                </form>
+            </div>
         </div>
 
     </section> 

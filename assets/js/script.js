@@ -10,14 +10,19 @@ const answerBtn = document.querySelector(".choice-button");
 const answerResponseEl = document.querySelector("#answer-response");
 const answerChoiceLi = document.querySelector(".answer-choice");
 const questionCounter = document.querySelector("#question-counter");
+const highScoresList = document.querySelector("#high-scores");
+const initialsEl = document.querySelector("#initials");
+const scoreEntryForm = document.querySelector("#score-entry-form");
+const scoreP = document.querySelector("#score");
 let timeInterval = null;
 const quizScore = 0;
 let answerBtnId = 0;
-let q = 0;
 let quizTimer = 10;
 let questionNumber = 0;
 let questionsCorrect = 0;
-
+let entryId = 0;
+let highScoresArr = [];
+const finalScore = document.querySelector("#final-score");
 const quizQuestionsArr = [
     // copy this object format for each question
   { question: 'Where is the correct place to insert JavaScript in an HTML file?', 
@@ -58,38 +63,12 @@ answer: {
   2: "Unlikely", 
   3: "I'm just here to see Kelly's code quiz", /*correct answer*/
   },
-correct: 1
+correct: 3
 }
 ];
 
 
-/*
-TIMER FUNCTION
-Counts Down from 60
-*/
 
-
-function countdown() {
-  // Use the `setInterval()` method to call a function to be executed every 1000 milliseconds
-   timeInterval = setInterval(function() {
-    // As long as the `quizTimer` is greater than 1
-    if (quizTimer > 1) {
-      // Set the `textContent` of `timerEl` to show the remaining seconds
-      timerEl.textContent = quizTimer + ' seconds remaining';
-      // Decrement `quizTimer` by 1
-      quizTimer--;
-    } else if (quizTimer === 1) {
-      // When `quizTimer` is equal to 1, rename to 'second' instead of 'seconds'
-      timerEl.textContent = quizTimer + ' second remaining';
-      quizTimer--;
-    } else if (quizTimer === 0) {
-        // Once `quizTimer` gets to 0, set `timerEl` to an empty string
-        timerEl.textContent = "TIMES UP!";
-        quizOver();
-        clearInterval(timeInterval);
-      }
-  }, 1000);
-};
 
 /*
 QUIZ INTRO FUNCTION
@@ -113,27 +92,22 @@ const quizIntro = function () {
     quizIntroEl.appendChild(quizDirections);
     // add button to div
     quizIntroEl.appendChild(startQuizBtn);
-    quizTimer = 60;
+    quizTimer = 10;
     questionNumber = 0;
     questionsCorrect = 0;
-    questionCounter.innerHTML = ""
+    questionCounter.innerHTML = "";
   };
 
-
-
-  
   // QUIZ QUESTIONS FUNCTION
   // populates each question
-
-
   const quizQuestions = function() { 
+    if (questionNumber === quizQuestionsArr.length) {
+      quizOver();
+   } else {
     const currentQuestion = quizQuestionsArr[questionNumber];
     answerResponseEl.textContent = "";
-    if (questionNumber === quizQuestionsArr.length) {
-      stopTimer();
-    } else {
       console.log("Here is the Question: ", currentQuestion.question);
-    questionEl.textContent = currentQuestion.question;
+      questionEl.textContent = currentQuestion.question;
 
     for (let [key, value] of Object.entries(currentQuestion.answer)){
         const choiceEl = document.createElement("li");
@@ -147,12 +121,49 @@ const quizIntro = function () {
         choiceBtn.textContent = value;
         choiceEl.appendChild(choiceBtn);
         answersEl.appendChild(choiceEl);
-    };
-    
-   }
-   
+      };
+    }
   };
 
+
+
+/*
+TIMER FUNCTION
+Counts Down from 60
+*/
+
+
+function countdown() {
+  // Use the `setInterval()` method to call a function to be executed every 1000 milliseconds
+   timeInterval = setInterval(function() {
+    // As long as the `quizTimer` is greater than 1
+    if (quizTimer > 1) {
+      // Set the `textContent` of `timerEl` to show the remaining seconds
+      timerEl.textContent = quizTimer + ' seconds remaining';
+      // Decrement `quizTimer` by 1
+      quizTimer--;
+    } else if (quizTimer === 1) {
+      // When `quizTimer` is equal to 1, rename to 'second' instead of 'seconds'
+      timerEl.textContent = quizTimer + ' second remaining';
+      quizTimer--;
+    } if (questionNumber === quizQuestionsArr.length) {
+        answersEl.innerHTML = "";
+        questionEl.innerHTML = "YOUR HAVE ANSWERED ALL QUIZ QUESTIONS! GAME OVER.";
+        console.log("END OF ARRAY. GAME OVER.");
+        setTimeout(function() {quizOver();}, 1000);
+        clearInterval(timeInterval);
+      } else if (quizTimer <= 0) {
+        // Once `quizTimer` gets to 0, set `timerEl` to an empty string
+        clearInterval(timeInterval);
+        answersEl.innerHTML = "";
+        questionEl.innerHTML = "";
+        // highScoreEl.innerHTML = "TIMES UP! GAME OVER.";
+        timerEl.textContent = "TIMES UP!";
+        console.log("TIMES UP! GAME OVER.");
+        quizOver();
+      }
+  }, 1000);
+};
 
 const stopTimer = function() {
   if (questionNumber === quizQuestionsArr.length) {
@@ -169,7 +180,6 @@ const stopTimer = function() {
   }
 };
 
-
 /*
 QUIZ OVER FUNCTION
 Ends quiz, shows score, and resets quiz
@@ -178,29 +188,106 @@ const quizOver = function() {
   // stop timer
   quizTimer = 0;
   questionCounter.innerHTML = "";
+  questionEl.textContent = "";
   // QuestionNumber = 0;
 
-  
   // create new high score text
   let highScoreText = document.createElement("h2");
-    highScoreText.innerHTML = "Final Score: "+ questionsCorrect + "/" + questionNumber ;
+    highScoreText.innerHTML = "<h2>Final Score: "+ questionsCorrect + "/" + questionNumber + "</h3><p>Would you like to save your score or try again?</p>";
 
    // creates play again button
-  let playAgainBtn = document.createElement("button");
+  let playAgainBtn = document.createElement("input");
+  playAgainBtn.setAttribute("type", "submit");
     // adds button text
     playAgainBtn.textContent = "Try Again";
     playAgainBtn.setAttribute('id', 'replay-btn');
 
+// save initials to local storage converted to uppercase
+  // creates button
+  let enterScoreBtn = document.createElement("button");
+  enterScoreBtn.className = "btn";
+  enterScoreBtn.setAttribute("id", "enter-score");
+  // adds button text
+  enterScoreBtn.innerHTML = "Enter Score";
+
   // add button to div
     highScoreEl.appendChild(highScoreText);
     highScoreEl.appendChild(playAgainBtn);
+    highScoreEl.appendChild(enterScoreBtn);
     answersEl.textContent = "";
-    questionEl.textContent = "";
   
   // reset questions and timer
     timerEl.innerHTML = "";
     
   };
+
+/* HIGH SCORE FUNCTION
+// Produces the initials entry and saves the high score
+*/
+// SAVE SCORE FUNCTION
+// Collects user initials and score, saves, and pushes to high scores menu
+
+
+// var loadScores = function() {
+  
+
+//   // loop through savedTasks array
+//   // for (let i = 0; i < savedScores.length; i++) {
+//   //   // pass each task object into the `createTaskEl()` function
+//   //   if (savedScores[i].id !== parseInt(highScoreId)) {
+//   //     savedScores.push(highScoresArr[i]);
+//   //   }
+//   }
+// };   
+
+
+
+  const  highScoreEntry = function(highScoreObj) {
+    const entry = document.createElement("li");
+    const initials = document.getElementById("initials").value;
+    entry.className = "high-score-entry";
+    entry.setAttribute("data-entry-id", entryId);
+      highScoreObj = {
+      initials: initials,
+      score: questionsCorrect,
+      id: entryId
+    };
+  
+    entryText = document.createElement("div");
+    entryText.className = "entry-text";
+    entryText.innerHTML = "<h3 class='initials-entry'>" + highScoreObj.initials + "<span class='score-entry'>" + highScoreObj.score + "</span></h3>";
+
+    console.log(entry); 
+    highScoresList.appendChild(entry);
+    entry.appendChild(entryText);
+
+ 
+    highScoreObj.id = entryId;
+    highScoresArr.push(highScoreObj);
+  
+    
+    console.log("Score Added!");
+    entryId++;
+};
+
+
+
+
+
+  highScoreHandler = function(event) {
+    let targetEl = event.target;
+    event.preventDefault();
+    
+    if (targetEl.matches("#enter-score")) {
+      event.preventDefault();
+      document.getElementById("high-score-form").style.visibility = "visible";
+      console.log("User would like to save their score!");
+  } if (targetEl.matches("#save-score-btn")) { 
+        highScoreEntry();
+        saveScores();
+      // setTimeout(function() {quizIntro();}, 1000);
+  };
+};
 
 
 
@@ -218,34 +305,34 @@ const startQuiz = function() {
   }; 
 
 
+
   
 /*
 QUIZ BUTTON HANDLER
 Controls start button, answer choices, and replay button
 */
 
-
 const quizButtonHandler = function (event) {
   var targetEl = event.target;
-
+event.preventDefault;
 // start quiz
   if (targetEl.matches("#start-btn")) {
     startQuiz();
     console.log("Start Quiz", targetEl);
 // play agin
 } if (targetEl.matches("#replay-btn")) {
-    quizIntroEl.textContent = "";
-    highScoreEl.textContent = "";
-    answersEl.textContent = "";
-    timerEl.innterHTML = "";
-    quizTimer = 10;
-    quizIntro();
-  console.log("Try Again", targetEl);
-// quiz answer choice
+  window.location.reload();
+    // quizIntroEl.textContent = "";
+    // highScoreEl.innerHTML = "<h2> </h2>";
+    // answersEl.textContent = "";
+    // timerEl.innterHTML = "";
+    // quizTimer = 10;
+    // quizIntro();
+  // console.log("Try Again", targetEl);
+  // quiz answer choice
 } if (targetEl.matches(".choice-button")) {
   console.log(targetEl);
   answersEl.innerHTML = "";
-  
   console.log(questionNumber);
     // on click, quiz over
     //  if (i === quizQuestionsArr.length) {
@@ -254,27 +341,43 @@ const quizButtonHandler = function (event) {
     //   console.log("END OF ARRAY. GAME OVER.");
     //   setTimeout(function() {quizOver();}, 1000);
       // quiz answer choice is correct]
- if (targetEl.id == JSON.stringify(quizQuestionsArr[questionNumber].correct)) {
-  console.log("Correct! Next question.", targetEl.id);
-  answerResponseEl.innerHTML = "Correct!";
-  questionsCorrect = questionsCorrect+1;
-  setTimeout(function() {quizQuestions();}, 1000);
- } else { answerResponseEl.innerHTML = "Incorrect! -5 seconds";
- quizTimer = quizTimer-5;
- setTimeout(function() {quizQuestions();}, 1000);
- console.log("Incorrect, next question.", targetEl.id);
- 
-      // quiz answer choice is incorrect
-    }
-    questionNumber++;
-    questionCounter.innerHTML = "Score: "+ questionsCorrect + "/" + questionNumber ;
-  }
-};
+      if (targetEl.id == JSON.stringify(quizQuestionsArr[questionNumber].correct)) {
+        console.log("Correct! Next question.", targetEl.id);
+        answerResponseEl.innerHTML = "Correct!";
+        questionsCorrect = questionsCorrect+1;
+        setTimeout(function() {quizQuestions();}, 1000);
+       } else { answerResponseEl.innerHTML = "Incorrect! -5 seconds";
+       quizTimer = quizTimer-5;
+       setTimeout(function() {quizQuestions();}, 1000);
+       console.log("Incorrect, next question.", targetEl.id);
+       
+            // quiz answer choice is incorrect
+          }
+          questionNumber++;
+          questionCounter.innerHTML = "Score: "+ questionsCorrect + "/" + questionNumber ;
+        }
+      };
 
+      const saveScores = function() {
+      localStorage.setItem("high-scores", JSON.stringify(highScoresArr));
+      };
 
+      const loadHighScores = function() {
+        let savedScores = localStorage.getItem("high-scores");
+          if (!savedScores) {
+            return false;
+          } 
+          highScoresArr.forEach(function(item) {
+            id = entryId;
+            entryId++;
+          });
+        };
 
 // STARTS QUIZ
 quizIntro();
+loadHighScores();
+document.getElementById("high-score-form").visibility = "hidden";
+
 
 
 
@@ -285,6 +388,9 @@ EVENT LISTENERS
 // event listener on start button to call start quiz
 quizContainer.addEventListener("click", quizButtonHandler);
 quizContainer.addEventListener("click", quizButtonHandler);
+highScoreEl.addEventListener("click", highScoreHandler);
+
+document.getElementById("high-score-form").addEventListener("click", highScoreEntry);
 
 
 
