@@ -1,43 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="assets/css/style.css"> -->
     <title>Code Quiz</title>
 </head>
 
 <body>
-   <!-- header with high scores and timer -->
-    <header class="flex-container main-content">
-        <div id="high-scores">
-            HIGH SCORES
-        </div>
-        <div id ="question-counter">
+    <div class="main-content container" id="page-content">
+
+        <!-- section to hold the title, timer, and question counter -->
+        <h1 class="row justify-content-center">Coding Quiz Challenge</h1>
+        <div class="row justify-content-center">
+            <div class="col" id="question-counter"></div>
+            <div class="col" id="timer"></div>
         </div>
 
-        </div>
-        <div id="timer"></div>
-    </header>
-
-<!-- section to hold the quiz -->
-    <section class="main-content" id="page-content">
-        <h1>Coding Quiz Challenge</h1>
-
-        <!-- Quiz questions and Answer Choices, populated on start -->
-        <div id="quiz-container">
-            <div id="quiz-intro"></div>
-            <div id="quiz-questions">
-                <div id="question"></div>
-                <ul id="answer-choices"></ul>
-                <div id="answer-response"></div>
+        <!-- section to hold leaderboard and quiz -->
+        <div class="row card-deck align-items-start">
+            <!-- leader board -->
+            <div class="col-2-auto">
+                <div class="card" id="leader-board">
+                    <h3 class="card-header">LEADERBOARD</h3>
+                    <ul class="list-group list-group-flush" id="high-scores" name="high-scores"></ul>
+                </div>
             </div>
-            <div id="high-score"></div>
+            <!-- Quiz -->
+            <div class="col-lg">
+            <div class="card col-lg" id="quiz-container">
+                <div id="quiz-intro"></div>
+                <div id="quiz-questions">
+                    <div id="question"></div>
+                    <ul id="answer-choices"></ul>
+                    <div id="answer-response"></div>
+                </div>
+                <div id="high-score">
+                    <h2 id="final-score"></h2>
+                    <form class="form" id="high-score-form">
+                        <input class="form-group" name="initials" id="initials" placeholer="Enter Initials" type="text">
+                        <button type="button" id="save-score-btn">Save Score</button>
+                    </form>
+                </div>
+            </div>
         </div>
+        </div>
+    </div>
 
-    </section> 
-   
     <script src="./assets/js/script.js"></script>
 </body>
+
 </html>
